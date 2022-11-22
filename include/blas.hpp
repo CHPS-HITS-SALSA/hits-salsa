@@ -9,7 +9,7 @@ namespace chps_blas {
     template <typename T>
     void spmv(Csr<T>& mtx, T const* x, T* y) {
         for (size_t i = 0; i < mtx.get_nb_rows(); ++i) {
-            for (size_t j = mtx.get_row_idx()[i]; j < mtx.get_row_idx()[i + 1] - 1; ++j) {
+            for (size_t j = mtx.get_row_idx()[i]; j < mtx.get_row_idx()[i + 1]; ++j) {
                 y[i] += mtx.get_values()[j] * x[mtx.get_col_idx()[j]];
             }
         }
