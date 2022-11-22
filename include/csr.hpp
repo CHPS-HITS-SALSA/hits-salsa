@@ -14,8 +14,8 @@ class Csr {
         std::vector<size_t> col_idx;
         std::vector<size_t> row_idx;
 
-        std::vector<T> getValues(){return values};
-        std::vector<size_t> getCol(){return col_idx};
-        std::vector<size_t> getRow(){return row_idx};
+        std::vector<T> getValues(){return values;};
+        std::vector<size_t> getCol(){return col_idx;};
+        std::vector<size_t> getRow(){return row_idx;};
 
 };
