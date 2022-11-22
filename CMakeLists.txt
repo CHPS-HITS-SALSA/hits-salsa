@@ -8,9 +8,13 @@ project(hits-salsa
 
 find_package(nlohmann_json 3.2.0 REQUIRED)
 
+add_library(csr OBJECT src/csr.cpp include/csr.hpp)
+target_include_directories(csr PRIVATE include)
+target_compile_features(csr PRIVATE cxx_std_17)
+
 add_executable(hits src/hits/main.cpp)
 target_link_libraries(hits PRIVATE nlohmann_json::nlohmann_json)
-target_compile_features(hits PUBLIC cxx_std_17)
+target_compile_features(hits PRIVATE cxx_std_17)
 
 add_executable(salsa src/salsa/main.cpp)
-target_compile_features(salsa PUBLIC cxx_std_17)
+target_compile_features(salsa PRIVATE cxx_std_17)
