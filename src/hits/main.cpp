@@ -1,6 +1,5 @@
-#include <nlohmann/json.hpp>
-
 #include <iostream>
+#include <nlohmann/json.hpp>
 #include <string>
 
 using json = nlohmann::json;
