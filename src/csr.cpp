@@ -2,19 +2,16 @@
 
 template <typename T>
 Csr<T>::Csr(std::vector<T> const& sp_mtx) {
-    // sparsify the input matrix into CSR format
-    int cmp = 0;
-    int n = sqrt(sp_mtx.size());
-
-    for(int i = 0; i < n; ++i){
-        this->row_idx[i*n] = cmp;
-        for(int j = 0; i < n; ++j){
-            if(sp_mtx[n*i+j] != 0){
-                this->values[cmp] = sp_mtx[n*i+j];
-                this->col_idx[cmp] = j;
-                cmp++;
+    size_t nnz = 0;
+    this->row_idx.push_back(nnz);
+    for (size_t i = 0; i < this->nb_rows; ++i) {
+        for (size_t j = 0; i < this->nb_rows; ++j) {
+            if (sp_mtx[i * this->nb_rows + j] != 0.0) {
+                this->values.push_back(sp_mtx[i * this->nb_rows + j]);
+                this->col_idx.push_back(j);
+                nnz++;
             }
         }
+        this->row_idx.push_back(nnz);
     }
-    this->row_idx[n] = cmp;
 }
