@@ -15,8 +15,8 @@ IndentWidth: 4
 # Indent width for line continuations.
 ContinuationIndentWidth: 4
 
-# Align pointers and references on the right (next to the type).
-PointerAlignment: Right
+# Align pointers and references on the left (next to the type).
+PointerAlignment: Left
 
 # Do not insert spaces in parentheses.
 SpacesInParentheses: false
@@ -104,7 +104,7 @@ BreakStringLiterals: true
 # BreakTemplateDeclaration: Always
 
 # Always break before concept declaration (after template decl)
-BreakBeforeConceptDeclarations: Always
+# BreakBeforeConceptDeclarations: Always
 
 # --------------------------------------------------------------------------- #
 # Indenting behavior                                                          #
