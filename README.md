@@ -14,9 +14,6 @@ cmake --build build -j
 2. Extract file : \
 `gunzip metadata.json.gz`
 
-1. Clean the input file (clean single quotes): \
+1. Make it JSON readable (clean single quotes, make it array): \
 `scripts/clean.py metadata.json clean_metadata.json`
 > Nb : Since the `metadata.json` file contains 9.4 million entries, you can extract a sample using, for example: `head -n 10000 metadata.json > sample.json` to extract the first 10000 entries
-
-1. Finaly further cleaning (make it a JSON readable file) \
-`sed -i -f clean.sed clean_metadata.json`
