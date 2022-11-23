@@ -31,7 +31,8 @@ target_link_libraries(test-blas PRIVATE csr blas)
 target_compile_features(test-blas PRIVATE cxx_std_17)
 
 add_executable(hits src/hits/main.cpp)
-target_link_libraries(hits PRIVATE nlohmann_json::nlohmann_json)
+target_include_directories(hits PRIVATE include)
+target_link_libraries(hits PRIVATE nlohmann_json::nlohmann_json csr)
 target_compile_features(hits PRIVATE cxx_std_17)
 
 add_executable(salsa src/salsa/main.cpp)
