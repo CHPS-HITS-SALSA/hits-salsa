@@ -12,6 +12,15 @@ add_library(csr OBJECT include/csr.hpp)
 target_include_directories(csr PRIVATE include)
 target_compile_features(csr PRIVATE cxx_std_17)
 
+add_library(utils OBJECT src/utils.cpp include/utils.hpp)
+target_include_directories(utils PRIVATE include)
+target_compile_features(utils PRIVATE cxx_std_17)
+
+add_executable(test-json test/json.cpp)
+target_include_directories(test-json PRIVATE include)
+target_link_libraries(test-json PRIVATE utils)
+target_compile_features(test-json PRIVATE cxx_std_17)
+
 add_library(blas OBJECT include/blas.hpp)
 target_include_directories(blas PRIVATE include)
 target_compile_features(blas PRIVATE cxx_std_17)
