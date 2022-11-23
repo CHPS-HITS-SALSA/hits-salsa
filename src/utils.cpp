@@ -3,7 +3,7 @@
 #include <nlohmann/json.hpp>
 
 using json = nlohmann::json;
-using namespace std;
+using std::cout, std::string, std::vector;
 
 int index(vector<string> v, string k) {
     auto it = find(v.begin(), v.end(), k);
@@ -15,7 +15,7 @@ int index(vector<string> v, string k) {
 
 void print_matrix(bool** mat) {
     // size_t size = sizeof(mat) / sizeof(mat[0]);
-    // cout << "size : " << size << endl;
+    // cout << "size : " << size << '\n';
     // // size_t size = mat.size();
     // for (int i = 0; i < size; ++i) {
     //     for (int j = 0; j < size; ++j) {
@@ -26,11 +26,11 @@ void print_matrix(bool** mat) {
 }
 
 bool** json_parse(string file) {
-    ifstream f(file);
+    std::ifstream f(file);
     json jdata = json::parse(f);
     vector<string> ids;
 
-    // cout << jdata.dump(2) << endl;
+    // cout << jdata.dump(2) << '\n';
 
     // for (auto it = jdata.begin(); it != jdata.end(); ++it) {
     int i = 0;
@@ -41,14 +41,14 @@ bool** json_parse(string file) {
             if ((it.contains("related") && it["related"].contains("also_viewed"))) {
                 auto v2 = it["related"]["also_viewed"];
                 ids.insert(ids.end(), v2.begin(), v2.end());
-                // cout << it["related"]["also_viewed"] << endl;
-                cout << i << endl;
+                // cout << it["related"]["also_viewed"] << '\n';
+                cout << i << '\n';
             }
         }
         i++;
     }
 
-    cout << "Unique identifiers : " << ids.size() << endl;
+    cout << "Unique identifiers : " << ids.size() << '\n';
 
     // bool adj[ids.size()][ids.size()] = {};
     // vector<vector<bool>>;
