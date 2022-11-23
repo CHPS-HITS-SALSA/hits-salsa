@@ -19,7 +19,7 @@ target_compile_features(utils PRIVATE cxx_std_17)
 add_executable(test-json test/json.cpp)
 target_include_directories(test-json PRIVATE include)
 target_link_libraries(test-json PRIVATE utils)
-target_compile_features(test-json PRIVATE cxx_std_17)
+target_compile_features(test-json PRIVATE cxx_std_20)
 
 add_library(blas OBJECT include/blas.hpp)
 target_include_directories(blas PRIVATE include)
