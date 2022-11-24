@@ -7,7 +7,7 @@ using json = nlohmann::json;
 
 using std::cout, std::vector, std::string;
 
-int index(const vector<string>& v, string k);
+int index(const vector<string>& v, const string& k);
 
 template <typename T>
 void print_matrix(const vector<T>& mat) {
@@ -54,8 +54,10 @@ vector<T> adjacency_matrix_parse(const string file) {
             viewed = (vector<string>)it["related"]["also_viewed"];
 
         for (string v : viewed) {
-            adj[index(ids, id) * ids.size() + index(ids, v)] = 1;
-            adj[index(ids, v) * ids.size() + index(ids, id)] = 1;
+            int i = index(ids, id);
+            int j = index(ids, v);
+            adj[i * ids.size() + j] = 1;
+            adj[j * ids.size() + i] = 1;
         }
     }
     return adj;

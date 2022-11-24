@@ -5,7 +5,7 @@
 
 using std::cout, std::string, std::vector;
 
-int index(const vector<string>& v, string k) {
+int index(const vector<string>& v, const string& k) {
     auto it = find(v.begin(), v.end(), k);
     int index = -1;
     if (it != v.end())
