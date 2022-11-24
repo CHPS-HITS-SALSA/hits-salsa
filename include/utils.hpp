@@ -7,10 +7,10 @@ using json = nlohmann::json;
 
 using std::cout, std::vector, std::string;
 
-int index(const vector<string> v, const string k);
+int index(const vector<string>& v, string k);
 
 template <typename T>
-void print_matrix(const vector<T> mat) {
+void print_matrix(const vector<T>& mat) {
     size_t dim = sqrt(mat.size());
 
     for (size_t i = 0; i < dim; ++i) {
@@ -45,7 +45,7 @@ vector<T> adjacency_matrix_parse(const string file) {
     // std::array<bool, size> adj = { 0 };
     vector<T> adj(size, 0);
 
-    cout << "Adjacent matrix size :" << adj.size() << std::endl;
+    cout << "Adjacent matrix size : " << adj.size() << std::endl;
 
     for (auto it : jdata) {
         string id = it["asin"];

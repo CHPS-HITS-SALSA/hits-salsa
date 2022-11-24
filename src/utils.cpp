@@ -5,7 +5,7 @@
 
 using std::cout, std::string, std::vector;
 
-int index(vector<string> v, string k) {
+int index(const vector<string>& v, string k) {
     auto it = find(v.begin(), v.end(), k);
     int index = -1;
     if (it != v.end())
@@ -16,4 +16,3 @@ int index(vector<string> v, string k) {
 std::string demangle(auto x) {
     return boost::core::demangle(typeid(x).name());
 }
-
