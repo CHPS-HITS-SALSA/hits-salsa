@@ -34,3 +34,8 @@
 # Build directories
 build
 target
+
+# IDE artifacts
+.cache
+.vscode
+compile_commands.json
