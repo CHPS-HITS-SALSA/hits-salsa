@@ -8,32 +8,35 @@ project(hits-salsa
 
 find_package(nlohmann_json 3.2.0 REQUIRED)
 
-add_library(csr OBJECT include/csr.hpp)
-target_include_directories(csr PRIVATE include)
-target_compile_features(csr PRIVATE cxx_std_17)
-
-add_library(utils OBJECT src/utils.cpp include/utils.hpp)
-target_include_directories(utils PRIVATE include)
-target_compile_features(utils PRIVATE cxx_std_17)
-
-add_executable(test-json test/json.cpp)
-target_include_directories(test-json PRIVATE include)
-target_link_libraries(test-json PRIVATE utils)
-target_compile_features(test-json PRIVATE cxx_std_17)
+# Objects
+add_library(csmat OBJECT include/csmat.hpp)
+target_include_directories(csmat PRIVATE include)
+target_compile_features(csmat PRIVATE cxx_std_17)
 
 add_library(blas OBJECT include/blas.hpp)
 target_include_directories(blas PRIVATE include)
 target_compile_features(blas PRIVATE cxx_std_17)
 
-add_executable(test-blas test/blas.cpp)
-target_include_directories(test-blas PRIVATE include)
-target_link_libraries(test-blas PRIVATE csr blas)
-target_compile_features(test-blas PRIVATE cxx_std_17)
-
-add_executable(hits src/hits/main.cpp)
+add_library(hits OBJECT include/algorithms/hits.hpp)
 target_include_directories(hits PRIVATE include)
-target_link_libraries(hits PRIVATE nlohmann_json::nlohmann_json csr)
 target_compile_features(hits PRIVATE cxx_std_17)
 
-add_executable(salsa src/salsa/main.cpp)
-target_compile_features(salsa PRIVATE cxx_std_17)
+add_library(utils OBJECT src/utils.cpp include/utils.hpp)
+target_include_directories(utils PRIVATE include)
+target_compile_features(utils PRIVATE cxx_std_17)
+
+# Tests
+add_executable(test-csmat test/csmat.cpp)
+target_include_directories(test-csmat PRIVATE include)
+target_link_libraries(test-csmat PRIVATE csmat)
+target_compile_features(test-csmat PRIVATE cxx_std_17)
+
+add_executable(test-blas test/blas.cpp)
+target_include_directories(test-blas PRIVATE include)
+target_link_libraries(test-blas PRIVATE csmat blas)
+target_compile_features(test-blas PRIVATE cxx_std_17)
+
+add_executable(test-json test/json.cpp)
+target_include_directories(test-json PRIVATE include)
+target_link_libraries(test-json PRIVATE utils)
+target_compile_features(test-json PRIVATE cxx_std_17)
