@@ -17,13 +17,16 @@ fw = open(argv[2], "w")
 max = sum(1 for _ in open(argv[1])) # Definitly slower, but is portable.
 i = 0
 
-for line in fo:
+fw.write("[")
+for i, line in enumerate(fo):
     jdump = json.dumps(ast.literal_eval(line))
     jload = json.loads(jdump)
     json.dump(jload, fw)
-    fw.write("\n")
-    i += 1
-    print(f"[{i/max*100:2.2f}%] {i}/{max}", end="\r")
+    if ((i + 1) != max):
+        fw.write(",\n")
+    else:
+        fw.write("]")
+    print(f"[{(i+1)/max*100:2.2f}%] {i+1}/{max}", end="\r")
 
 print("")
 
