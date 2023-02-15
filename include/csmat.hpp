@@ -40,7 +40,7 @@ class CsMat {
 public:
     ~CsMat() = default;
 
-    static auto new_csr(size_t ncols, size_t nrows, DenseMatrix<T> const& mtx) -> CsMat {
+    static auto new_csr(size_t ncols, size_t nrows, DenseMatrix<T> const& mtx) -> CsMat<T> {
         std::vector<T> data;
         std::vector<size_t> indices;
         std::vector<size_t> indptr(nrows + 1, 0);
@@ -88,9 +88,11 @@ public:
         for (size_t i = 0; i < get_nnz(); ++i) {
             ++transposed_indptr[outer_indices[i] + 1];
         }
+
         for (size_t i = 0; i < get_inner_dim(); ++i) {
             transposed_indptr[i + 1] += transposed_indptr[i];
         }
+
         for (size_t i = 0; i < get_outer_dim(); ++i) {
             for (size_t j = outer_indptr[i]; j < outer_indptr[i + 1]; ++j) {
                 auto col = outer_indices[j];
@@ -100,6 +102,7 @@ public:
                 ++transposed_indptr[col];
             }
         }
+
         for (int i = get_inner_dim() - 1; i > 0; --i) {
             transposed_indptr[i] = transposed_indptr[i - 1];
         }
@@ -149,6 +152,18 @@ public:
 
     [[nodiscard]] inline auto get_indptr() const -> std::vector<size_t> const& {
         return this->indptr;
+    };
+
+    [[nodiscard]] inline auto get_mut_storage() -> CsKind& {
+        return this->storage;
+    };
+
+    [[nodiscard]] inline auto get_mut_ncols() -> size_t& {
+        return this->ncols;
+    };
+
+    [[nodiscard]] inline auto get_mut_nrows() -> size_t& {
+        return this->nrows;
     };
 
     [[nodiscard]] inline auto get_mut_data() -> std::vector<T>& {
@@ -205,13 +220,15 @@ public:
         for (auto val : mat.indices) {
             stream << val << ", ";
         }
-        stream << "\b\b], indptrs: [";
+        stream << "\b\b], indptr: [";
         for (auto val : mat.indptr) {
             stream << val << ", ";
         }
         stream << "\b\b] }";
         return stream;
     }
+
+    CsMat() : storage(CsKind::Csr), ncols(0), nrows(0) {}
 
 private:
     CsKind storage;
@@ -221,7 +238,6 @@ private:
     std::vector<size_t> indices;
     std::vector<size_t> indptr;
 
-    CsMat() : storage(CsKind::Csr), ncols(0), nrows(0) {}
     CsMat(
         CsKind storage,
         size_t ncols,
