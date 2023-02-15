@@ -7,7 +7,7 @@
 #include <vector>
 
 auto main(int32_t argc, char** argv) -> int32_t {
-    size_t ncols = 3;
+    size_t ncols = 4;
     size_t nrows = 4;
     const std::vector<double> unit_vec(nrows, 1.0);
     std::vector<double> res_csr(nrows, 0.0);
@@ -15,9 +15,12 @@ auto main(int32_t argc, char** argv) -> int32_t {
 
     // Example sparse matrix
     std::vector<double> sp_mtx = {
-        0.0, 0.0, 8.0, 5.0, 0.0, 0.0, 0.0, 3.0, 0.0, 6.0, 0.0, 0.0,
+        0.0, 0.0, 8.0, 0.0,
+        5.0, 0.0, 0.0, 0.0,
+        0.0, 3.0, 0.0, 0.0,
+        0.0, 0.0, 0.0, 6.0,
     };
-    std::cout << "sp_mtx = [" << std::endl;
+    std::cout << "sp_mtx = {" << std::endl;
     for (size_t i = 0; i < nrows; ++i) {
         std::cout << "  [";
         for (size_t j = 0; j < ncols; ++j) {
@@ -25,7 +28,7 @@ auto main(int32_t argc, char** argv) -> int32_t {
         }
         std::cout << "\b\b]\n";
     }
-    std::cout << "]" << std::endl;
+    std::cout << "}\n" << std::endl;
 
     // Sparsify the sparse matrix to a CSR format
     CsMat<double> csr_mtx = CsMat<double>::new_csr(ncols, nrows, sp_mtx);
@@ -35,14 +38,14 @@ auto main(int32_t argc, char** argv) -> int32_t {
     std::cout << "csc_mtx = " << csc_mtx << std::endl;
 
     // Compute matrix-vector product using CSR format
-    blas::spmv(csr_mtx, 1.0, unit_vec.data(), 1.0, res_csr.data());
+    blas::spmv(2.0, csr_mtx, unit_vec, 1.0, res_csr);
     std::cout << "csr_mtx * unit_vec = [";
     for (double& val : res_csr) {
         std::cout << val << ", ";
     }
     std::cout << "\b\b]" << std::endl;
     // Compute matrix-vector product using CSC format
-    blas::spmv(csc_mtx, 1.0, unit_vec.data(), 1.0, res_csc.data());
+    blas::spmv(2.0, csc_mtx, unit_vec, 1.0, res_csc);
     std::cout << "csc_mtx * unit_vec = [";
     for (double& val : res_csc) {
         std::cout << val << ", ";
@@ -68,6 +71,9 @@ auto main(int32_t argc, char** argv) -> int32_t {
         std::cout << val << ", ";
     }
     std::cout << "\b\b]" << std::endl;
+
+    CsMat<double> mmres = blas::spmm(csr_mtx, csc_mtx);
+    std::cout << "\n" << mmres << std::endl;
 
     return 0;
 }
