@@ -40,7 +40,7 @@ namespace blas {
      * @param y The output vector.
      **/
     template <typename T>
-    void spmv(CsMat<T>& mtx, T alpha, T const* x, T beta, T* y) {
+    auto spmv(CsMat<T>& mtx, T alpha, T const* x, T beta, T* y) -> void {
         size_t dim = mtx.get_outer_dim();
 
         std::vector<T> const& values = mtx.get_data();
