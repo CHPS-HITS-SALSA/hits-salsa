@@ -1,8 +1,8 @@
 #pragma once
 
+#include <cassert>
 #include <cmath>
 #include <iostream>
-#include <tuple>
 #include <vector>
 
 template <typename T>
@@ -106,7 +106,7 @@ public:
         transposed_indptr[0] = 0;
 
         return CsMat<T>(
-            this->storage == CsKind::Csr ? CsKind::Csc : CsKind::Csr,
+            this->storage,
             this->nrows,
             this->ncols,
             transposed_data,
@@ -164,26 +164,34 @@ public:
     };
 
     auto inline operator==(CsMat const& rhs) const -> bool {
+        assert(this->data.size() == rhs.data.size());
+        assert(this->indices.size() == rhs.indices.size());
+        assert(this->indptr.size() == rhs.indptr.size());
+
         bool is_eq = true;
-        for (const auto& [self_v, rhs_v]: std::make_pair(this->data, rhs->data)) {
-            if (self_v != rhs_v) {
+
+        for (size_t i = 0; i < this->data.size(); ++i) {
+            if (this->data[i] != rhs.data[i]) {
                 is_eq = false;
             }
         }
+        if (is_eq != true) { return false; }
 
-        for (const auto& [self_v, rhs_v]: std::make_pair(this->indices, rhs->indices)) {
-            if (self_v != rhs_v) {
+        for (size_t i = 0; i < this->indices.size(); ++i) {
+            if (this->indices[i] != rhs.indices[i]) {
                 is_eq = false;
             }
         }
+        if (is_eq != true) { return false; }
 
-        for (const auto& [self_v, rhs_v]: std::make_pair(this->indptr, rhs->indptr)) {
-            if (self_v != rhs_v) {
+        for (size_t i = 0; i < this->indptr.size(); ++i) {
+            if (this->indptr[i] != rhs.indptr[i]) {
                 is_eq = false;
             }
         }
+        if (is_eq != true) { return false; }
 
-        return is_eq;
+        return true;
     }
 
     friend auto operator<<(std::ostream& stream, CsMat const& mat) -> std::ostream& {
