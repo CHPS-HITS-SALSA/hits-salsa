@@ -33,25 +33,73 @@ namespace blas {
     }
 
     /**
-     * Sparse matrix-vector multiplication for the Compressed Sparse format (CSR or CSC).
+     * Sparse matrix-vector multiplication for the Compressed Sparse Row storage format.
      *
-     * @param mtx A matrix in the CS format.
+     * @param alpha A constant.
+     * @param A A matrix in the CSR format.
      * @param x A vector.
+     * @param beta A constant.
      * @param y The output vector.
      **/
     template <typename T>
-    auto spmv(CsMat<T>& mtx, T alpha, T const* x, T beta, T* y) -> void {
-        size_t dim = mtx.get_outer_dim();
+    auto spmv(
+        T alpha,
+        CsMat<T> const& A,
+        std::vector<T> const& x,
+        T beta,
+        std::vector<T>& y
+    ) -> void {
+        assert(A.get_ncols() == x.size());
+        assert(A.get_ncols() == y.size());
 
-        std::vector<T> const& values = mtx.get_data();
-        std::vector<size_t> const& indices = mtx.get_indices();
-        std::vector<size_t> const& indptr = mtx.get_indptr();
+        std::vector<T> const& values = A.get_data();
+        std::vector<size_t> const& indices = A.get_indices();
+        std::vector<size_t> const& indptr = A.get_indptr();
 
-        for (size_t i = 0; i < dim; ++i) {
+        #pragma omp parallel for
+        for (size_t i = 0; i < A.get_nrows(); ++i) {
+            T tmp = y[i] * beta;
             for (size_t j = indptr[i]; j < indptr[i + 1]; ++j) {
-                y[i] += alpha * values[j] * x[indices[j]];
+                tmp += alpha * values[j] * x[indices[j]];
             }
-            y[i] *= beta;
+            y[i] += tmp;
         }
+    }
+
+    template <typename T>
+    auto spmm(CsMat<T> const& A, CsMat<T> const& B) -> CsMat<T> {
+        // Check that the matrices have compatible dimensions
+        assert(A.get_ncols() == B.get_nrows());
+
+        CsMat<T> C;
+        C.get_mut_nrows() = A.get_nrows();
+        C.get_mut_ncols() = B.get_ncols();
+
+        // Compute the row pointer array for C
+        C.get_mut_indptr().push_back(0);
+        #pragma omp parallel for
+        for (size_t i = 0; i < A.get_nrows(); i++) {
+            std::vector<T> crow(B.get_ncols(), 0.0);
+            for (size_t j = A.get_indptr()[i]; j < A.get_indptr()[i + 1]; j++) {
+                T val = A.get_data()[j];
+                for (
+                    size_t k = B.get_indptr()[A.get_indices()[j]];
+                    k < B.get_indptr()[A.get_indices()[j] + 1];
+                    k++
+                ) {
+                    crow[B.get_indices()[k]] += val * B.get_data()[k];
+                }
+            }
+
+            for (size_t j = 0; j < B.get_ncols(); j++) {
+                if (crow[j] != 0.0) {
+                    C.get_mut_data().push_back(crow[j]);
+                    C.get_mut_indices().push_back(j);
+                }
+            }
+            C.get_mut_indptr().push_back(C.get_indices().size());
+        }
+
+        return C;
     }
 } // namespace blas
