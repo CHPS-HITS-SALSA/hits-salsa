@@ -13,9 +13,9 @@
 /// @param mtx The input sparse matrix.
 /// @param error The epsilon threshold used to determine when the algorithm has converged.
 /// @return A tuple containing the authority and hub scoring vectors.
-template <typename T>
-auto hits(CsMat<T> const& mtx, double error) -> std::pair<std::vector<T>, std::vector<T>> {
-    size_t const n = mtx->get_nrows();
+template <typename T = double>
+auto hits(CsMat<T> const& A, double error) -> std::pair<std::vector<T>, std::vector<T>> {
+    size_t const n = A->get_nrows();
 
     // Authority scoring
     std::vector<T> a(n, 1.0);
@@ -23,23 +23,25 @@ auto hits(CsMat<T> const& mtx, double error) -> std::pair<std::vector<T>, std::v
     std::vector<T> h(n, 1.0);
 
     // Transpose the input matrix once as it is constant
-    CsMat<T> transposed_mtx = mtx.transposed();
+    CsMat<T> AT = A.transposed();
 
-    // Forward declare the norms of the authority and hub scoring vectors at the previous iteration.
+    // Forward declare the norms of the authority and hub scoring vectors at the previous iteration
     T norm_a_prev;
     T norm_h_prev;
+
+    // Repeat until convergence
     do {
         // Store previous iteration by calling the copy constructor
         std::vector<T> a_prev = a;
         std::vector<T> h_prev = h;
 
         // a <- Ah
-        blas::spmv(mtx, h, a);
+        blas::spmv(1.0, A, h, 0.0, a);
         // a <- a / |a|
         blas::normalize(a);
 
         // h <- A'a
-        blas::spmv(transposed_mtx, a, h);
+        blas::spmv(1.0, AT, a, 0.0, h);
         // h <- h / |h|
         blas::normalize(h);
 
