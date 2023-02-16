@@ -32,6 +32,39 @@ namespace blas {
     }
 
     /**
+     * Normalizes the rows of a CSR matrix.
+     *
+     * @param A An input CSR matrix.
+     * @return The input CSR matrix with its rows normalized.
+     **/
+    template <typename T>
+    auto normalize_rows(CsMat<T> const& A) -> CsMat<T> {
+        CsMat<T> A_normalized_rows = A;
+
+        // Loop over each row in the matrix
+        #pragma omp parallel for
+        for (size_t i = 0; i < A.get_nrows(); ++i) {
+            std::vector<T> row_data;
+            // Extract the non-zero values in the current row
+            #pragma omp simd
+            for (size_t j = A.get_indptr()[i]; j < A.get_indptr()[i + 1]; ++j) {
+                row_data.push_back(A.get_data()[j]);
+            }
+
+            // Normalize the current row
+            normalize(row_data);
+
+            // Update the matrix data with the normalized values
+            #pragma omp simd
+            for (size_t j = A.get_indptr()[i]; j < A.get_indptr()[i + 1]; ++j) {
+                A_normalized_rows.get_mut_data()[j] = row_data[j - A.get_indptr()[i]];
+            }
+        }
+
+        return A_normalized_rows;
+    }
+
+    /**
      * Sparse matrix-vector multiplication for the Compressed Sparse Row storage format.
      *
      * @param alpha A constant.
