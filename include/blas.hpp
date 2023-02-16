@@ -91,6 +91,7 @@ namespace blas {
         #pragma omp parallel for
         for (size_t i = 0; i < A.get_nrows(); ++i) {
             T tmp = y[i] * beta;
+            #pragma omp simd
             for (size_t j = indptr[i]; j < indptr[i + 1]; ++j) {
                 tmp += alpha * values[j] * x[indices[j]];
             }
@@ -114,6 +115,7 @@ namespace blas {
             std::vector<T> crow(B.get_ncols(), 0.0);
             for (size_t j = A.get_indptr()[i]; j < A.get_indptr()[i + 1]; j++) {
                 T val = A.get_data()[j];
+                #pragma omp simd
                 for (
                     size_t k = B.get_indptr()[A.get_indices()[j]];
                     k < B.get_indptr()[A.get_indices()[j] + 1];
@@ -123,6 +125,7 @@ namespace blas {
                 }
             }
 
+            #pragma omp simd
             for (size_t j = 0; j < B.get_ncols(); j++) {
                 if (crow[j] != 0.0) {
                     C.get_mut_data().push_back(crow[j]);
