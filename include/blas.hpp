@@ -21,8 +21,7 @@ namespace blas {
     /**
      * Normalizes a vector.
      *
-     * @param x An input vector.
-     * @return The norm-2 of `x`.
+     * @param x An input vector to normalize.
      **/
     template <typename T>
     auto normalize(std::vector<T>& x) -> void {
