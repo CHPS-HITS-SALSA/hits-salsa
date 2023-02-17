@@ -58,6 +58,60 @@ public:
         return CsMat(CsKind::Csr, ncols, nrows, data, indices, indptr);
     }
 
+    static auto csr_parse(std::string filename) {
+        std::ifstream file(filename);
+        if (!file.is_open()) {
+            throw std::runtime_error("Error: could not open file");
+        }
+        std::string line;
+
+        size_t line_count = 0;
+        size_t n = 0;
+        size_t ncols = 0;
+        size_t nrows = 0;
+
+        std::vector<double> data;
+        std::vector<size_t> cols;
+        std::vector<size_t> rows;
+        double tmp;
+        size_t tmp2;
+
+        while (std::getline(file, line)) {
+            std::istringstream iss(line);
+
+            switch (line_count) {
+                case 0:
+                    iss >> n >> ncols >> nrows;
+                    data.resize(n);
+                    cols.resize(ncols);
+                    rows.resize(nrows);
+                    break;
+
+                case 1:
+                    for (size_t i = 0; i < n; ++i) {
+                        iss >> tmp;
+                        data[i] = tmp;
+                    }
+                    break;
+                case 2:
+                    for (size_t i = 0; i < ncols; ++i) {
+                        iss >> tmp2;
+                        cols[i] = tmp2;
+                    }
+                    break;
+                case 3:
+                    for (size_t i = 0; i < nrows; ++i) {
+                        iss >> tmp2;
+                        rows[i] = tmp2;
+                    }
+                    break;
+            }
+            line_count++;
+        }
+
+        return CsMat(CsKind::Csr, ncols, nrows, data, cols, rows);
+    }
+
     static auto new_csc(size_t ncols, size_t nrows, DenseMatrix<T> const& mtx) -> CsMat {
         std::vector<T> data;
         std::vector<size_t> indices;
