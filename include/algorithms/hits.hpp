@@ -16,7 +16,7 @@ namespace algorithms {
     /// @return A tuple containing the authority and hub scoring vectors.
     template <typename T = double>
     auto hits(CsMat<T> const& A, double error) -> std::pair<std::vector<T>, std::vector<T>> {
-        size_t const n = A->get_nrows();
+        size_t const n = A.get_nrows();
 
         // Authority scoring
         std::vector<T> a(n, 1.0);
