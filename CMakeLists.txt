@@ -6,31 +6,34 @@ project(hits-salsa
   DESCRIPTION "Sparse HITS and SALSA implementations for parallel systems"
   LANGUAGES CXX)
 
+find_package(OpenMP REQUIRED)
 find_package(nlohmann_json 3.2.0 REQUIRED)
 
 set(CMAKE_CXX_STANDARD 17)
 
 # Objects
 add_library(csmat OBJECT include/csmat.hpp)
-target_include_directories(csmat PRIVATE include)
+target_link_libraries(csmat PUBLIC OpenMP::OpenMP_CXX)
+target_include_directories(csmat PUBLIC include)
 
 add_library(blas OBJECT include/blas.hpp)
-target_include_directories(blas PRIVATE include)
+target_link_libraries(csmat PUBLIC OpenMP::OpenMP_CXX)
+target_include_directories(blas PUBLIC include)
 
 add_library(hits OBJECT include/algorithms/hits.hpp)
-target_include_directories(hits PRIVATE include)
+target_include_directories(hits PUBLIC include)
 
 add_library(utils OBJECT src/utils.cpp include/utils.hpp)
-target_include_directories(utils PRIVATE include)
+target_include_directories(utils PUBLIC include)
 
 # Tests
 add_executable(test-csmat test/csmat.cpp)
-target_include_directories(test-csmat PRIVATE include)
-target_link_libraries(test-csmat PRIVATE csmat)
+target_include_directories(test-csmat PUBLIC include)
+target_link_libraries(test-csmat PUBLIC csmat)
 
 add_executable(test-blas test/blas.cpp)
-target_include_directories(test-blas PRIVATE include)
-target_link_libraries(test-blas PRIVATE csmat blas)
+target_include_directories(test-blas PUBLIC include)
+target_link_libraries(test-blas PUBLIC csmat blas)
 
 add_executable(test-json test/json.cpp)
 target_include_directories(test-json PRIVATE include)
@@ -39,3 +42,5 @@ target_link_libraries(test-json PRIVATE utils)
 add_executable(test-hits test/hits.cpp)
 target_include_directories(test-hits PRIVATE include)
 target_link_libraries(test-hits PRIVATE utils)
+target_include_directories(test-json PUBLIC include)
+target_link_libraries(test-json PUBLIC utils)
