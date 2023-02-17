@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <cmath>
 #include <numeric>
+#include <omp.h>
 
 namespace blas {
     /**
@@ -26,6 +27,9 @@ namespace blas {
     template <typename T>
     auto normalize(std::vector<T>& x) -> void {
         T norm = norm2(x);
+        #if defined(PARALLEL)
+        #pragma omp parallel
+        #endif
         std::for_each(x.begin(), x.end(), [norm](T& v) {
             v /= norm;
         });
@@ -42,7 +46,9 @@ namespace blas {
         CsMat<T> A_normalized_rows = A;
 
         // Loop over each row in the matrix
+        #if defined(PARALLEL)
         #pragma omp parallel for
+        #endif
         for (size_t i = 0; i < A.get_nrows(); ++i) {
             std::vector<T> row_data;
             // Extract the non-zero values in the current row
@@ -88,7 +94,9 @@ namespace blas {
         std::vector<size_t> const& indices = A.get_indices();
         std::vector<size_t> const& indptr = A.get_indptr();
 
+        #if defined(PARALLEL)
         #pragma omp parallel for
+        #endif
         for (size_t i = 0; i < A.get_nrows(); ++i) {
             T tmp = y[i] * beta;
             #pragma omp simd
@@ -110,7 +118,9 @@ namespace blas {
 
         // Compute the row pointer array for C
         C.get_mut_indptr().push_back(0);
+        #if defined(PARALLEL)
         #pragma omp parallel for
+        #endif
         for (size_t i = 0; i < A.get_nrows(); i++) {
             std::vector<T> crow(B.get_ncols(), 0.0);
             for (size_t j = A.get_indptr()[i]; j < A.get_indptr()[i + 1]; j++) {
