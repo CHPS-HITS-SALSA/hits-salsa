@@ -4,6 +4,8 @@
 #include <cmath>
 #include <iostream>
 #include <vector>
+#include <fstream>
+#include <sstream>
 
 template <typename T>
 using DenseMatrix = std::vector<T>;
