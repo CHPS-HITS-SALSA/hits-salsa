@@ -21,8 +21,7 @@ namespace blas {
     /**
      * Normalizes a vector.
      *
-     * @param x An input vector.
-     * @return The norm-2 of `x`.
+     * @param x An input vector to normalize.
      **/
     template <typename T>
     auto normalize(std::vector<T>& x) -> void {
@@ -30,6 +29,39 @@ namespace blas {
         std::for_each(x.begin(), x.end(), [norm](T& v) {
             v /= norm;
         });
+    }
+
+    /**
+     * Normalizes the rows of a CSR matrix.
+     *
+     * @param A An input CSR matrix.
+     * @return The input CSR matrix with its rows normalized.
+     **/
+    template <typename T>
+    auto normalize_rows(CsMat<T> const& A) -> CsMat<T> {
+        CsMat<T> A_normalized_rows = A;
+
+        // Loop over each row in the matrix
+        #pragma omp parallel for
+        for (size_t i = 0; i < A.get_nrows(); ++i) {
+            std::vector<T> row_data;
+            // Extract the non-zero values in the current row
+            #pragma omp simd
+            for (size_t j = A.get_indptr()[i]; j < A.get_indptr()[i + 1]; ++j) {
+                row_data.push_back(A.get_data()[j]);
+            }
+
+            // Normalize the current row
+            normalize(row_data);
+
+            // Update the matrix data with the normalized values
+            #pragma omp simd
+            for (size_t j = A.get_indptr()[i]; j < A.get_indptr()[i + 1]; ++j) {
+                A_normalized_rows.get_mut_data()[j] = row_data[j - A.get_indptr()[i]];
+            }
+        }
+
+        return A_normalized_rows;
     }
 
     /**
@@ -59,6 +91,7 @@ namespace blas {
         #pragma omp parallel for
         for (size_t i = 0; i < A.get_nrows(); ++i) {
             T tmp = y[i] * beta;
+            #pragma omp simd
             for (size_t j = indptr[i]; j < indptr[i + 1]; ++j) {
                 tmp += alpha * values[j] * x[indices[j]];
             }
@@ -82,6 +115,7 @@ namespace blas {
             std::vector<T> crow(B.get_ncols(), 0.0);
             for (size_t j = A.get_indptr()[i]; j < A.get_indptr()[i + 1]; j++) {
                 T val = A.get_data()[j];
+                #pragma omp simd
                 for (
                     size_t k = B.get_indptr()[A.get_indices()[j]];
                     k < B.get_indptr()[A.get_indices()[j] + 1];
@@ -91,6 +125,7 @@ namespace blas {
                 }
             }
 
+            #pragma omp simd
             for (size_t j = 0; j < B.get_ncols(); j++) {
                 if (crow[j] != 0.0) {
                     C.get_mut_data().push_back(crow[j]);
