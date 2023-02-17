@@ -35,3 +35,7 @@ target_link_libraries(test-blas PRIVATE csmat blas)
 add_executable(test-json test/json.cpp)
 target_include_directories(test-json PRIVATE include)
 target_link_libraries(test-json PRIVATE utils)
+
+add_executable(test-hits test/hits.cpp)
+target_include_directories(test-hits PRIVATE include)
+target_link_libraries(test-hits PRIVATE utils)
